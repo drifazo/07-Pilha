@@ -4,16 +4,27 @@ using namespace std;
 // definicao de tipo
 struct NO {
 	int valor;
-	NO* prox;
+	NO* esq;
+	NO* dir;
 };
 
-NO* topo = NULL;
+NO* raiz = NULL;
 
 // headers
+// estrutura principal
 void menu();
 void inicializar();
-void pop();
-void push();
+void inserir();
+void exibir();
+void exibirQuantidade();
+
+
+
+// funcoes auxiliares Arvore
+NO* insereArvore(NO* no, int valor);
+NO* criaNO(int valor);
+int elementosArvore(NO* no);
+void exibirElementosArvore(NO* no);
 //--------------------------
 
 
@@ -25,15 +36,16 @@ int main()
 void menu()
 {
 	int op = 0;
-	while (op != 4) {
+	while (op != 5) {
 		system("cls"); // somente no windows
-		cout << "Menu Pilha";
+		cout << "Menu Arvore";
 		cout << endl << endl;
-		cout << "1 - Inicializar Pilha \n";
-		cout << "2 - Inserir elemento (Push) \n";
-		cout << "3 - Remover elementos (Pop) \n";
-		cout << "4 - Sair \n";
+		cout << "1 - Inicializar Arvore \n";
+		cout << "2 - Exibir quantidade de elementos \n";
+		cout << "3 - Inserir elemento \n";
+		cout << "4 - Exibir elementos \n";
 
+		cout << "5 - Sair \n";
 
 		cout << "Opcao: ";
 		cin >> op;
@@ -42,12 +54,12 @@ void menu()
 		{
 		case 1: inicializar();
 			break;
-		case 2:push();
+		case 2:exibirQuantidade();
 			break;
-		case 3: pop();
+		case 3: inserir();
 			break;
-		case 4:
-			return;
+		case 4: exibir();
+			break;
 		default:
 			break;
 		}
@@ -59,41 +71,91 @@ void menu()
 void inicializar()
 {
 
-	// se a lista j� possuir elementos
-	// libera a memoria ocupada
-	NO* aux = topo;
-	while (aux != NULL) {
-		NO* paraExcluir = aux;
-		aux = aux->prox;
-		free(paraExcluir);
-	}
-
-	topo = NULL;
-	cout << "Pilha inicializada \n";
+	// provisório porque não libera a memoria usada pela arvore
+	NO* raiz = NULL;
+	
+	cout << "Arvore inicializada \n";
 
 }
 
 
-void push()
+void inserir()
 {
-	// aloca memoria dinamicamente para o novo elemento
+	int valor;
+	cout << "Digite o elemento: ";
+	cin >> valor;
+	if (raiz == NULL) {
+		raiz = criaNO(valor);
+	}
+	else {
+		 insereArvore(raiz, valor);
+	}
+
+
+}
+
+void exibirQuantidade() {
+	cout << "Quantidade de elementos: " << elementosArvore(raiz) << endl;
+	
+}
+
+void exibir() {
+	exibirElementosArvore(raiz);
+}
+
+
+NO* criaNO(int valor)
+{
 	NO* novo = (NO*)malloc(sizeof(NO));
 	if (novo == NULL)
 	{
-		return;
+		return NULL;
 	}
 
-	cout << "Digite o elemento: ";
-	cin >> novo->valor;
-	novo->prox = NULL;
+	novo->valor = valor;
+	novo->esq = NULL;
+	novo->dir = NULL;
 
-
+	return novo;
 }
 
-void pop()
+NO* insereArvore(NO* no, int valor)
 {
-
+	if (no->valor > valor && no->esq == NULL) {
+		no->esq = criaNO(valor);
+		return no->esq;
+	}
+	else if (no->valor < valor && no->dir == NULL) {
+		no->dir = criaNO(valor);
+		return no->dir;
+	}
+	else if (no->valor > valor) {
+		return insereArvore(no->esq, valor);
+	}
+	else if (no->valor < valor) {
+		return insereArvore(no->dir, valor);
+	}
+	else {
+		return NULL;
+	}
 	
-
 }
 
+int elementosArvore(NO* no)
+{
+	if (no == NULL) {
+		return 0;
+	}
+
+	return 1 + elementosArvore(no->esq) + elementosArvore(no->dir);
+}
+
+void exibirElementosArvore(NO* no)
+{
+	if (no == NULL) {
+		return;
+	}
+		exibirElementosArvore(no->esq);
+		cout << no->valor << endl;
+		exibirElementosArvore(no->dir);
+}
